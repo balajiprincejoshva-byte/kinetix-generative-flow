@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KinetiX — Protein Conformational Ensemble Explorer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="logo">KinetiX <span class="logo-sub">/ Flow-Matching</span></div>
+    <div class="topbar-status" id="status-indicator">Ready</div>
+  </header>
+
+  <!-- Main layout: sidebar left, viewer right -->
+  <main class="layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Upload panel -->
+      <section class="panel" id="upload-panel">
+        <h3 class="panel-title">Input Structure</h3>
+        <div class="drop-zone" id="drop-zone">
+          <span>Drop PDB file here</span>
+          <span class="drop-sub">or click to browse</span>
+          <input type="file" id="pdb-input" accept=".pdb" hidden />
+        </div>
+        <button class="btn-primary" id="load-sample-btn">Load 1UBQ (Demo)</button>
+      </section>
+
+      <!-- Protein info panel (hidden until loaded) -->
+      <section class="panel hidden" id="protein-info-panel">
+        <h3 class="panel-title">Protein Info</h3>
+        <div class="info-grid" id="protein-info-grid">
+          <!-- filled by JS: residues, sequence length, etc -->
+        </div>
+      </section>
+
+      <!-- Ensemble control panel -->
+      <section class="panel hidden" id="ensemble-panel">
+        <h3 class="panel-title">Conformational Ensemble</h3>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="gen-progress"></div>
+        </div>
+        <div class="frame-counter" id="frame-counter">0 / 100 frames</div>
+
+        <!-- Playback controls -->
+        <div class="playback-controls">
+          <button class="btn-icon" id="rewind-btn" title="Rewind">Prev</button>
+          <button class="btn-icon" id="play-btn" title="Play">Play</button>
+          <button class="btn-icon" id="pause-btn" title="Pause">Pause</button>
+        </div>
+
+        <label class="control-label">Frame
+          <input type="range" id="frame-slider" min="0" max="99" value="0" />
+          <span id="frame-display">0</span>
+        </label>
+
+        <label class="control-label">Speed
+          <input type="range" id="speed-slider" min="1" max="20" value="5" />
+        </label>
+
+        <label class="control-label">RMSD from input: <span id="rmsd-display">—</span> Å</label>
+      </section>
+
+      <!-- Latent Map Panel -->
+      <section class="panel hidden" id="latent-panel">
+        <h3 class="panel-title">Latent Energy Landscape</h3>
+        <canvas id="latent-canvas" width="280" height="200" style="width:100%; border:1px solid var(--border); border-radius:var(--radius-sm); margin-top:8px; cursor:crosshair;"></canvas>
+        <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:4px;">
+          Click a node to snap to frame
+        </div>
+      </section>
+
+      <!-- Pocket hunter panel -->
+      <section class="panel hidden" id="pocket-panel">
+        <h3 class="panel-title">Cryptic Pocket Hunter</h3>
+        <button class="btn-primary" id="hunt-pockets-btn">Run Analysis</button>
+        <div id="pocket-list"><!-- populated dynamically --></div>
+      </section>
+
+    </aside>
+
+    <!-- RIGHT: 3D Viewer -->
+    <div class="viewer-container">
+      <canvas id="mol-canvas"></canvas>
+
+      <!-- Overlay: loading spinner -->
+      <div class="viewer-overlay hidden" id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Initializing model...</div>
+      </div>
+
+      <!-- Viewer toolbar (top-right of canvas) -->
+      <div class="viewer-toolbar">
+        <button class="vtb-btn" id="toggle-backbone" title="Toggle backbone">BB</button>
+        <button class="vtb-btn" id="toggle-sidechains" title="Toggle sidechains">SC</button>
+        <button class="vtb-btn" id="toggle-surface" title="Toggle surface">SF</button>
+        <button class="vtb-btn" id="reset-camera" title="Reset camera">RST</button>
+      </div>
+
+      <!-- Frame info badge -->
+      <div class="frame-badge hidden" id="frame-badge">
+        Frame <span id="badge-frame">0</span> · RMSD <span id="badge-rmsd">—</span> Å
+      </div>
+    </div>
+
+  </main>
+  
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
